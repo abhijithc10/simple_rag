@@ -4,7 +4,9 @@ import pymupdf
 from langchain_chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
+from langchain_huggingface import HuggingFaceEmbeddings
 
+embedding_model="nomic-embed-text-v1.5"
 
 pdf_path="./pdfdrop"
 database_path="./chroma_db"
@@ -14,7 +16,8 @@ pdf_drop_files=os.listdir(pdf_path)
 reg=re.compile(r'\.(Identifier)$')
 pdf_drop_files=[s for s in pdf_drop_files if reg.search(s)==None]
 
-def create_database(list_pdf,embedding): #takes in list of pdf names&embedding_model,chunks it and saves the vector database onto disk and returns the retriever 
+def create_database(list_pdf): #takes a list of pdf names&embedding_model,chunks it and saves the vector database onto disk and returns the retriever 
+    embedding=HuggingFaceEmbeddings(model_name=embedding_model)
     text_splitter=RecursiveCharacterTextSplitter(chunk_size=1000,chunk_overlap=200)
     doc_num=0
     for doc in list_pdf:
@@ -33,9 +36,17 @@ def create_database(list_pdf,embedding): #takes in list of pdf names&embedding_m
             print(f"added {doc}")
     return vector_store.as_retriever(search_kwargs={"k":4})
 
-def load_database(embedding): # loads the existing chroma database
+def load_database(): # loads the existing chroma database
+    embedding=HuggingFaceEmbeddings(model_name=embedding_model)
     vector_store=Chroma(persist_directory=database_path,embedding_function=embedding)
     return vector_store.as_retriever(search_kwargs={"k":4})
+
+def retriever_load():# create chroma_db at first and load it subsequent times
+    if os.listdir(database_path)==[]:
+        return create_database(pdf_drop_files)
+    else:
+        return load_database()
+
 
 
 
