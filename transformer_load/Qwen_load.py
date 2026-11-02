@@ -5,7 +5,7 @@ from langchain_huggingface import HuggingFacePipeline,ChatHuggingFace
 import os
 import torch
 
-def transformer_load(): 
+def transformer_load(): #initialize and load transformer model
     load_dotenv()
 
     login(token=os.getenv("HFTOKEN"))
