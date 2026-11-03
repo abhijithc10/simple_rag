@@ -3,8 +3,10 @@ from transformer_load.Qwen_load import transformer_load
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+from fastapi import FastAPI
+from pydantic import BaseModel
 
-def format_docs(docs):
+def format_docs(docs): # format the retriver output to add metadata
     final_formatted_chunks=[]
     for doc in docs:
         source=doc.metadata["source"]
@@ -30,5 +32,18 @@ chain=(
 
 )
 
-response=chain.invoke("How many rounds of national allotments will be there ?")
-print(response)
+
+class request(BaseModel):
+    question:str
+
+
+app=FastAPI()
+
+@app.get('/')
+def root():
+    return "works!"
+
+@app.post('/chat/')
+def chat(request:request):
+    response=chain.invoke(request.question)
+    return {"response":response}

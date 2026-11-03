@@ -18,7 +18,7 @@ pdf_drop_files=[s for s in pdf_drop_files if reg.search(s)==None]
 
 def create_database(list_pdf): #takes a list of pdf names&embedding_model,chunks it and saves the vector database onto disk and returns the retriever 
     embedding=HuggingFaceEmbeddings(model_name=embedding_model,model_kwargs={"device":"cuda:0"})
-    text_splitter=RecursiveCharacterTextSplitter(chunk_size=1000,chunk_overlap=200)
+    text_splitter=RecursiveCharacterTextSplitter(chunk_size=1000,chunk_overlap=200,separators=["\n\n", "\n", " ", ""])
     doc_num=0
     for doc in list_pdf:
         pdf=pymupdf.open(f'{pdf_path}/{doc}')
