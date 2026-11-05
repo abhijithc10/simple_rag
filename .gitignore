@@ -1,3 +1,4 @@
 .env
 pdfdrop/
 chroma_db/
+system_message.md

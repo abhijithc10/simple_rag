@@ -19,8 +19,11 @@ def format_docs(docs): # format the retriver output to add metadata
 retriever=retriever_load() # loads the chroma db retriever
 model=transformer_load() #loads the llm model
 
+with open("system_message.md") as file:
+    system_message=file.read()
+
 template=ChatPromptTemplate.from_messages([
-    ("system","you are an assistant helping to answer questions about neet medical pg seat allotment. Use the following pieces of retrieved context to answer the question. If you don't know the answer, say that you don't know.\n\nContext:\n{context}"),
+    ("system",system_message+"\n\nContext:\n{context}"),
     ("human","{question}")
 ])
 
